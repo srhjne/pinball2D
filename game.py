@@ -22,6 +22,8 @@ class PinBall(object):
 		self.level = level
 		self.screen = pygame.display.set_mode((self.screen_width,self.screen_height))
 		self.screen.fill((255,255,255))
+		self.background = pygame.image.load('blank_bg.png').convert()
+		self.screen.blit(self.background, (0, 30))
 		self.score = 0
 		pygame.font.init() # you have to call this at the start, 
                    # if you want to use this module.
@@ -46,22 +48,37 @@ class PinBall(object):
 	def draw_ball(self):
 		pygame.draw.rect(self.screen, self.green, (self.ball.position[0], self.ball.position[1], self.ball.width, self.ball.height))
 		pygame.display.update()
-		
+		self.screen.blit()
+
 	def play_game(self):
+		
+
+		
 		self.ball = Ball(380,690)
-		self.draw_ball()
+		self.player = pygame.image.load('ball.png').convert()
+		position = self.player.get_rect()
+		position.left = 380
+		position.top = 690
+		#self.draw_ball()
 		gtime = 0
 
-		self.ball.velocity[1] = -100
+		self.ball.velocity[1] = -200
+		self.ball.velocity[0] = -50
 		gravity = np.ndarray(2)
 		gravity[0] = 0
 		gravity[1] = 10
 		while True:
-			physics.update_velocity_position(self.ball, gtime, gtime+1, gravity)
+			physics.update_velocity_position(self.ball, gtime, gtime+0.1, gravity)
+			self.screen.blit(self.background, position, position) #erase
+			position.left = self.ball.position[0]
+			position.top = self.ball.position[1]     #move player
+			self.screen.blit(self.player, position)      #draw new player
+			pygame.display.update()            #and show it all
+			pygame.time.delay(100)
 			print(self.ball.position)
-			gtime+=1
-			self.draw_ball()
-			time.sleep(0.5)
+			gtime+=0.1
+			#self.draw_ball()
+			
 
 
 class Ball(object):
