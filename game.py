@@ -37,7 +37,9 @@ class PinBall(object):
 		pygame.display.update()
 
 	def get_table(self, level):
-		return {"holes": [(200,400),(200,200),(270,500),(130,500)],"hole_size":40}
+		self.table = {"holes": [(200,400),(200,200),(270,500),(130,500)],"hole_size":40}
+		return self.table
+
 
 	def display_table(self):
 		for hole in self.table["holes"]:
@@ -67,16 +69,28 @@ class PinBall(object):
 		gravity = np.ndarray(2)
 		gravity[0] = 0
 		gravity[1] = 10
-		while True:
-			physics.update_velocity_position(self.ball, gtime, gtime+0.1, gravity)
+		
+		while self.lives > 0:
+			check = physics.update_velocity_position(self.ball, gtime, gtime+0.1, gravity)
+			if not check:
+				self.lives -= 1
+				self.ball.position[0] = 380
+				self.ball.position[1] = 690
 			self.screen.blit(self.background, position, position) #erase
 			position.left = self.ball.position[0]
 			position.top = self.ball.position[1]     #move player
 			self.screen.blit(self.player, position)      #draw new player
-			pygame.display.update()            #and show it all
+			pygame.display.update()  
+			if physics.handle_holes(self.ball, self.table["holes"], self.table["hole_size"]):
+				self.score +=20 
+				self.lives -=1  
+				self.ball.position[0] = 380
+				self.ball.position[1] = 690      
 			pygame.time.delay(100)
 			print(self.ball.position)
 			gtime+=0.1
+			print("score", self.score)
+
 			#self.draw_ball()
 			
 
